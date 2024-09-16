@@ -1,6 +1,7 @@
 import { fetchImages } from './js/pixabay-api.js';
 import { renderImages } from './js/render-function.js';
 import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 const searchForm = document.getElementById('search-form');
 const galleryElement = document.getElementById('gallery');
@@ -27,30 +28,17 @@ searchForm.addEventListener('submit', async e => {
   hideLoader();
 
   if (images.length === 0) {
-    iziToast.info({
+    iziToast.error({
       title: 'Info',
       message:
         'Sorry, there are no images matching your search query. Please try again!',
+      position: 'topRight',
     });
   } else {
     renderImages(images, galleryElement);
   }
 });
 
-let loaderToast;
+function showLoader() {}
 
-function showLoader() {
-  loaderToast = iziToast.show({
-    message: 'Loading images...',
-    timeout: false,
-    close: false,
-    class: 'loader',
-    position: 'topRight',
-  });
-}
-
-function hideLoader() {
-  if (loaderToast) {
-    iziToast.hide({}, loaderToast);
-  }
-}
+function hideLoader() {}
