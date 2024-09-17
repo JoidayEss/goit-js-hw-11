@@ -6,10 +6,18 @@ import 'izitoast/dist/css/iziToast.min.css';
 const searchForm = document.getElementById('search-form');
 const galleryElement = document.getElementById('gallery');
 
-searchForm.addEventListener('submit', async e => {
+searchForm.addEventListener('submit', function (e) {
   e.preventDefault();
 
   const query = document.getElementById('search-input').value.trim();
+
+  function showLoader() {
+    document.getElementById('loader').classList.remove('hidden');
+  }
+
+  function hideLoader() {
+    document.getElementById('loader').classList.add('hidden');
+  }
 
   if (!query) {
     iziToast.error({
@@ -23,20 +31,29 @@ searchForm.addEventListener('submit', async e => {
 
   showLoader();
 
-  const images = await fetchImages(query);
+  fetchImages(query)
+    .then(images => {
+      hideLoader();
 
-  hideLoader();
-
-  if (images.length === 0) {
-    iziToast.error({
-      title: 'Info',
-      message:
-        'Sorry, there are no images matching your search query. Please try again!',
-      position: 'topRight',
+      if (images.length === 0) {
+        iziToast.error({
+          title: 'Info',
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+          position: 'topRight',
+        });
+      } else {
+        renderImages(images, galleryElement);
+      }
+    })
+    .catch(error => {
+      hideLoader();
+      iziToast.error({
+        title: 'Error',
+        message: 'Something went wrong. Please try again later.',
+      });
+      console.error('Error:', error);
     });
-  } else {
-    renderImages(images, galleryElement);
-  }
 });
 
 function showLoader() {}
